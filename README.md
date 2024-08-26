@@ -25,3 +25,36 @@ Create a `config.json` file in the project root:
   "tls_key": ""
 }
 ```
+
+## Building and Running
+
+Use the provided Makefile:
+
+- **`make build`**: Build the load balancer and test server.
+- **`make run`**: Run the load balancer.
+- **`make test_servers`**: Run three test servers.
+- **`make clean`**: Remove built binaries.
+
+## Testing
+
+Start the test servers:
+
+```bash
+make test_servers
+```
+
+In another terminal, start the load balancer:
+
+```bash
+make run
+```
+
+Send requests to the load balancer:
+
+```bash
+curl http://localhost:8080
+```
+
+## License
+
+This project is licensed under the MIT License.
