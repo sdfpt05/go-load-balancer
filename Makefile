@@ -1,17 +1,25 @@
-
-.PHONY: build run test_servers clean
+.PHONY: build test run clean docker-build docker-run
 
 build:
-	go build -o bin/load_balancer cmd/lb/main.go
-	go build -o bin/test_server cmd/be/test_server.go
+    @echo "Building..."
+    @go build -o bin/loadbalancer ./cmd/loadbalancer
+
+test:
+    @echo "Running tests..."
+    @go test ./...
 
 run: build
-	./bin/load_balancer
-
-test_servers: build
-	./bin/test_server -port 8081 & \
-	./bin/test_server -port 8082 & \
-	./bin/test_server -port 8083 &
+    @echo "Running..."
+    @./bin/loadbalancer
 
 clean:
-	rm -f bin/load_balancer bin/test_server
+    @echo "Cleaning..."
+    @rm -rf bin/*
+
+docker-build:
+    @echo "Building Docker image..."
+    @docker build -t loadbalancer:latest -f deployments/Dockerfile .
+
+docker-run: docker-build
+    @echo "Running Docker container..."
+    @docker run -p 8080:8080 -p 9090:9090 loadbalancer:latest

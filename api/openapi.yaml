@@ -1,0 +1,33 @@
+```yaml
+openapi: 3.0.0
+info:
+  title: Load Balancer API
+  version: 1.0.0
+  description: API specification for the load balancer
+
+paths:
+  /:
+    get:
+      summary: Forward request to backend server
+      responses:
+        '200':
+          description: Successful response from backend server
+        '502':
+          description: Bad Gateway - All backend servers are unavailable
+
+  /health:
+    get:
+      summary: Get load balancer health status
+      responses:
+        '200':
+          description: Load balancer is healthy
+        '503':
+          description: Load balancer is unhealthy
+
+  /metrics:
+    get:
+      summary: Get Prometheus metrics
+      responses:
+        '200':
+          description: Prometheus formatted metrics data
+```
