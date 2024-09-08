@@ -2,7 +2,7 @@ package loadbalancers
 
 import (
 	"context"
-	"load-balancer/domain"
+	"github.com/sdfpt05/go_load_balancer/v2/internal/domain"
 	"sort"
 )
 

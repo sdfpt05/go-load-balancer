@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"context"
-	"myapp/domain"
+	"github.com/sdfpt05/go_load_balancer/v2/internal/domain"
 	"time"
 )
 

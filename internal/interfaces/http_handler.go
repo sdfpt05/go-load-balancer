@@ -2,9 +2,10 @@ package interfaces
 
 import (
 	"context"
-	"myapp/usecases"
+	"github.com/sdfpt05/go_load_balancer/v2/internal/usecases"
 	"net/http"
 	"net/http/httputil"
+	"sync/atomic"
 	"time"
 )
 
