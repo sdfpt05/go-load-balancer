@@ -1,6 +1,6 @@
 # load-balancer
 
-This project implements a simple TCP load balancer with health checks, written in Go.
+A simple TCP load balancer written in Go I built to test one of my many pet projects.
 
 ## Features
 
