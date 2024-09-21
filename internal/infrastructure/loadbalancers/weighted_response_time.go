@@ -39,15 +39,3 @@ func (wrt *WeightedResponseTime) NextServer(ctx context.Context) (*domain.Server
 
 	return activeServers[0], nil
 }
-
-func (wrt *WeightedResponseTime) UpdateServer(server *domain.Server) {
-	wrt.mu.Lock()
-	defer wrt.mu.Unlock()
-
-	for i, s := range wrt.servers {
-		if s.URL.String() == server.URL.String() {
-			wrt.servers[i] = server
-			break
-		}
-	}
-}

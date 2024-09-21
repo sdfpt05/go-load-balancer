@@ -33,15 +33,3 @@ func (rr *RoundRobin) NextServer(ctx context.Context) (*domain.Server, error) {
 
 	return nil, ErrNoServersAvailable
 }
-
-func (rr *RoundRobin) UpdateServer(server *domain.Server) {
-	rr.mu.Lock()
-	defer rr.mu.Unlock()
-
-	for i, s := range rr.servers {
-		if s.URL.String() == server.URL.String() {
-			rr.servers[i] = server
-			break
-		}
-	}
-}

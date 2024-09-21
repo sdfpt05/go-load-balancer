@@ -39,15 +39,3 @@ func (lc *LeastConnections) NextServer(ctx context.Context) (*domain.Server, err
 
 	return activeServers[0], nil
 }
-
-func (lc *LeastConnections) UpdateServer(server *domain.Server) {
-	lc.mu.Lock()
-	defer lc.mu.Unlock()
-
-	for i, s := range lc.servers {
-		if s.URL.String() == server.URL.String() {
-			lc.servers[i] = server
-			break
-		}
-	}
-}
