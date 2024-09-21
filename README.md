@@ -1,6 +1,6 @@
 # Go Load Balancer
 
-A high-performance, feature-rich TCP load balancer written in Go.
+A high-performance TCP load balancer written in Go.
 
 ## Features
 
