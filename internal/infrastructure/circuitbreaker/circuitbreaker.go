@@ -72,7 +72,7 @@ func (cb *CircuitBreaker) executeHalfOpen(fn func() error) error {
 func (cb *CircuitBreaker) executeOpen() error {
 	if time.Since(cb.lastOpened) > cb.timeout {
 		cb.state = StateHalfOpen
-		return cb.executeHalfOpen(fn)
+		return nil
 	}
 	return errors.New("circuit breaker is open")
 }

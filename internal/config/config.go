@@ -28,15 +28,17 @@ type Config struct {
 		KeyFile  string `yaml:"key_file"`
 	} `yaml:"tls"`
 
-	Logging struct {
-		Level  string `yaml:"level"`
-		Format string `yaml:"format"`
-	} `yaml:"logging"`
+	Logging LoggingConfig `yaml:"logging"`
 
 	Metrics struct {
 		Enabled bool `yaml:"enabled"`
 		Port    int  `yaml:"port"`
 	} `yaml:"metrics"`
+}
+
+type LoggingConfig struct {
+	Level  string `yaml:"level"`
+	Format string `yaml:"format"`
 }
 
 func Load(filename string) (*Config, error) {

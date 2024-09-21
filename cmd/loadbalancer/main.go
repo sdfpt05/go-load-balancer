@@ -3,10 +3,13 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -19,6 +22,7 @@ import (
 	"github.com/sdfpt05/go_load_balancer/v2/internal/usecases"
 	"github.com/sdfpt05/go_load_balancer/v2/pkg/metrics"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
