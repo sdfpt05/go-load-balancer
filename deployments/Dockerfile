@@ -1,4 +1,5 @@
-FROM golang:1.19-alpine AS builder
+# Build stage
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -6,15 +7,18 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o loadbalancer ./cmd/loadbalancer
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o load_balancer cmd/loadbalancer/main.go
 
-FROM alpine:3.14
+# Final stage
+FROM alpine:latest
 
-WORKDIR /app
+RUN apk --no-cache add ca-certificates
 
-COPY --from=builder /app/loadbalancer .
-COPY configs/config.yaml /app/configs/
+WORKDIR /root/
+
+COPY --from=builder /app/load_balancer .
+COPY config/config.yaml .
 
 EXPOSE 8080 9090
 
-CMD ["./loadbalancer"]
+CMD ["./load_balancer", "-config", "config.yaml"]
