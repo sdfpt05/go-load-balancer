@@ -1,0 +1,36 @@
+server:
+  listen_addr: "127.0.0.1:8080"
+  read_timeout: 5s
+  write_timeout: 10s
+  idle_timeout: 120s
+  tls:
+    enabled: false
+    cert_file: ""
+    key_file: ""
+
+load_balancer:
+  algorithm: round-robin
+  health_check:
+    interval: 10s
+    timeout: 5s
+    path: "/health"
+
+backend_servers:
+  - url: "http://127.0.0.1:8081"
+    weight: 1
+  - url: "http://127.0.0.1:8082"
+    weight: 1
+  - url: "http://127.0.0.1:8083"
+    weight: 1
+
+logging:
+  level: info
+  format: json
+
+metrics:
+  enabled: true
+  port: 9090
+
+feature_toggles:
+  enable_circuit_breaker: true
+  enable_rate_limiting: false

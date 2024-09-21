@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"github.com/sdfpt05/go_load_balancer/v2/internal/domain"
 	"github.com/sdfpt05/go_load_balancer/v2/internal/infrastructure/loadbalancers"
@@ -17,20 +18,26 @@ import (
 	"time"
 )
 
+type Config struct {
+	ListenAddr string   `json:"listen_addr"`
+	Servers    []string `json:"servers"`
+	TLSCert    string   `json:"tls_cert"`
+	TLSKey     string   `json:"tls_key"`
+}
+
 func main() {
+	configFile := flag.String("config", "config/config.json", "Path to configuration file")
 	algorithm := flag.String("algorithm", "round-robin", "Load balancing algorithm: round-robin, least-connections, or weighted-response-time")
-	listenAddr := flag.String("listen", ":8080", "Address to listen on")
 	healthCheckInterval := flag.Duration("health-check-interval", 10*time.Second, "Interval between health checks")
 	flag.Parse()
 
-	serverURLs := []string{
-		"http://localhost:8081",
-		"http://localhost:8082",
-		"http://localhost:8083",
+	config, err := loadConfig(*configFile)
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	servers := make([]*domain.Server, len(serverURLs))
-	for i, urlStr := range serverURLs {
+	servers := make([]*domain.Server, len(config.Servers))
+	for i, urlStr := range config.Servers {
 		u, err := url.Parse(urlStr)
 		if err != nil {
 			log.Fatalf("Invalid server URL: %v", err)
@@ -55,7 +62,7 @@ func main() {
 	handler := interfaces.NewHTTPHandler(useCase)
 
 	srv := &http.Server{
-		Addr:    *listenAddr,
+		Addr:    config.ListenAddr,
 		Handler: handler,
 	}
 
@@ -65,8 +72,14 @@ func main() {
 	go useCase.StartHealthCheck(ctx, *healthCheckInterval)
 
 	go func() {
-		log.Printf("Starting load balancer on %s using %s algorithm", *listenAddr, *algorithm)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Printf("Starting load balancer on %s using %s algorithm", config.ListenAddr, *algorithm)
+		var err error
+		if config.TLSCert != "" && config.TLSKey != "" {
+			err = srv.ListenAndServeTLS(config.TLSCert, config.TLSKey)
+		} else {
+			err = srv.ListenAndServe()
+		}
+		if err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Listen and serve error: %v", err)
 		}
 	}()
@@ -85,4 +98,21 @@ func main() {
 	}
 
 	log.Println("Server exiting")
+}
+
+func loadConfig(filename string) (*Config, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var config Config
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config, nil
 }
