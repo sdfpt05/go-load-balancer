@@ -1,25 +1,42 @@
-.PHONY: build test run clean docker-build docker-run
+# Makefile
+
+# Variables
+BINARY_NAME=load_balancer
+DOCKER_IMAGE_NAME=go-load-balancer
+
+.PHONY: all build test clean run docker-build docker-run
+
+all: test build
 
 build:
-    @echo "Building..."
-    @go build -o bin/loadbalancer ./cmd/loadbalancer
+	go build -o ${BINARY_NAME} cmd/loadbalancer/main.go
 
 test:
-    @echo "Running tests..."
-    @go test ./...
-
-run: build
-    @echo "Running..."
-    @./bin/loadbalancer
+	go test -v ./...
 
 clean:
-    @echo "Cleaning..."
-    @rm -rf bin/*
+	go clean
+	rm -f ${BINARY_NAME}
+
+run: build
+	./${BINARY_NAME}
 
 docker-build:
-    @echo "Building Docker image..."
-    @docker build -t loadbalancer:latest -f deployments/Dockerfile .
+	docker build -t ${DOCKER_IMAGE_NAME} .
 
 docker-run: docker-build
-    @echo "Running Docker container..."
-    @docker run -p 8080:8080 -p 9090:9090 loadbalancer:latest
+	docker run -p 8080:8080 -p 9090:9090 ${DOCKER_IMAGE_NAME}
+
+lint:
+	golangci-lint run
+
+benchmark:
+	go test -bench=. ./...
+
+coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out
+
+deps:
+	go mod tidy
+	go mod verify
