@@ -1,33 +1,83 @@
-```yaml
 openapi: 3.0.0
 info:
-  title: Load Balancer API
+  title: Go Load Balancer API
   version: 1.0.0
-  description: API specification for the load balancer
+  description: API for managing the Go Load Balancer
 
 paths:
-  /:
-    get:
-      summary: Forward request to backend server
-      responses:
-        '200':
-          description: Successful response from backend server
-        '502':
-          description: Bad Gateway - All backend servers are unavailable
-
   /health:
     get:
-      summary: Get load balancer health status
+      summary: Health check endpoint
       responses:
         '200':
           description: Load balancer is healthy
         '503':
           description: Load balancer is unhealthy
 
-  /metrics:
+  /servers:
     get:
-      summary: Get Prometheus metrics
+      summary: Get all backend servers
       responses:
         '200':
-          description: Prometheus formatted metrics data
-```
+          description: Successful response
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Server'
+    
+    post:
+      summary: Add a new backend server
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerInput'
+      responses:
+        '201':
+          description: Server added successfully
+        '400':
+          description: Invalid input
+
+  /servers/{serverUrl}:
+    delete:
+      summary: Remove a backend server
+      parameters:
+        - in: path
+          name: serverUrl
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Server removed successfully
+        '404':
+          description: Server not found
+
+components:
+  schemas:
+    Server:
+      type: object
+      properties:
+        url:
+          type: string
+        active:
+          type: boolean
+        connections:
+          type: integer
+        lastChecked:
+          type: string
+          format: date-time
+        responseTime:
+          type: number
+          format: float
+    
+    ServerInput:
+      type: object
+      properties:
+        url:
+          type: string
+      required:
+        - url
