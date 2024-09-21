@@ -2,6 +2,7 @@ package unit
 
 import (
 	"context"
+	"net/url"
 	"testing"
 
 	"github.com/sdfpt05/go_load_balancer/v2/internal/domain"
@@ -14,9 +15,9 @@ func TestRoundRobin(t *testing.T) {
 		{URL: mustParseURL("http://server2.com")},
 		{URL: mustParseURL("http://server3.com")},
 	}
-	
+
 	rr := loadbalancers.NewRoundRobin(servers)
-	
+
 	for i := 0; i < 6; i++ {
 		server, err := rr.NextServer(context.Background())
 		if err != nil {

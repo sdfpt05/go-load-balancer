@@ -1,6 +1,3 @@
-# Makefile
-
-# Variables
 BINARY_NAME=load_balancer
 DOCKER_IMAGE_NAME=go-load-balancer
 

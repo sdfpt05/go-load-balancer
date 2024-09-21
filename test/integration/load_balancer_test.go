@@ -3,6 +3,7 @@ package integration
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/sdfpt05/go_load_balancer/v2/internal/infrastructure/loadbalancers"
 	"github.com/sdfpt05/go_load_balancer/v2/internal/interfaces"
 	"github.com/sdfpt05/go_load_balancer/v2/internal/usecases"
+	"go.uber.org/zap"
 )
 
 func TestLoadBalancerIntegration(t *testing.T) {
