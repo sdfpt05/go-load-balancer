@@ -1,35 +1,46 @@
 package metrics
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"net/http"
 )
 
 var (
-	requestsTotal = prometheus.NewCounterVec(
+	RequestsTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "http_requests_total",
 			Help: "Total number of HTTP requests",
 		},
-		[]string{"method", "endpoint"},
+		[]string{"status"},
 	)
 
-	responseTime = prometheus.NewHistogramVec(
+	RequestDuration = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
-			Name:    "http_response_time_seconds",
-			Help:    "HTTP response time in seconds",
+			Name:    "http_request_duration_seconds",
+			Help:    "Duration of HTTP requests in seconds",
 			Buckets: prometheus.DefBuckets,
 		},
-		[]string{"method", "endpoint"},
+	)
+
+	ActiveConnections = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "active_connections",
+			Help: "Number of active connections per backend server",
+		},
+		[]string{"server"},
 	)
 )
 
-func init() {
-	prometheus.MustRegister(requestsTotal)
-	prometheus.MustRegister(responseTime)
-}
+func Setup(metricsPort int) {
+	prometheus.MustRegister(RequestsTotal)
+	prometheus.MustRegister(RequestDuration)
+	prometheus.MustRegister(ActiveConnections)
 
-func MetricsHandler() http.Handler {
-	return promhttp.Handler()
+	http.Handle("/metrics", promhttp.Handler())
+	go func() {
+		http.ListenAndServe(fmt.Sprintf(":%d", metricsPort), nil)
+	}()
 }
