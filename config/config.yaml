@@ -3,29 +3,24 @@ server:
   read_timeout: 5s
   write_timeout: 10s
   idle_timeout: 120s
-  tls:
-    enabled: false
-    cert_file: ""
-    key_file: ""
 
 load_balancer:
-  algorithm: round-robin
-  health_check:
-    interval: 10s
-    timeout: 5s
-    path: "/health"
+  algorithm: "round-robin"
+  health_check_interval: 10s
 
 backend_servers:
-  - url: "http://127.0.0.1:8081"
-    weight: 1
-  - url: "http://127.0.0.1:8082"
-    weight: 1
-  - url: "http://127.0.0.1:8083"
-    weight: 1
+  - "http://localhost:8081"
+  - "http://localhost:8082"
+  - "http://localhost:8083"
+
+tls:
+  enabled: false
+  cert_file: ""
+  key_file: ""
 
 logging:
-  level: info
-  format: json
+  level: "info"
+  format: "json"
 
 metrics:
   enabled: true
